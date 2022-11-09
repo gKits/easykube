@@ -3,11 +3,12 @@ package kubernetes
 import (
 	"context"
 
+	"github.com/gKits/easykube/utils"
+	appsV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-    "github.com/gKits/easykube/utils"
 )
 
 type Client struct {
@@ -15,7 +16,7 @@ type Client struct {
     kubeconfig  string
 }
 
-func CreateClient(kubeconfig, namespace string) (Client, error) {
+func NewClient(kubeconfig, namespace string) (Client, error) {
     client := Client{}
 
     config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
@@ -32,6 +33,17 @@ func CreateClient(kubeconfig, namespace string) (Client, error) {
     client.Clientset = clientset
 
     return client, nil
+}
+
+func (c *Client) CreateDeployment(deploymentYaml string) error{
+    var deployment appsV1.Deployment
+    if err := utils.UnmarshalYaml(deploymentYaml, &deployment); err != nil {
+        return err
+    }
+    if _, err := c.Clientset.AppsV1().Deployments(deployment.Namespace).Create(context.TODO(), &deployment, metaV1.CreateOptions{}); err != nil {
+        return err
+    }
+    return nil
 }
 
 func (c *Client) CreateSecret(secretYaml string) error{
@@ -69,3 +81,4 @@ func (c *Client) CreatePod(podYaml string) error{
     }
     return nil
 }
+
