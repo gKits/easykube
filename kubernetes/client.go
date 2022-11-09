@@ -16,7 +16,14 @@ type Client struct {
     kubeconfig  string
 }
 
-func NewClient(kubeconfig, namespace string) (Client, error) {
+/*
+creates a new kubernetes client
+
+:param: kubeconfig: string: path to config file of kubernetes cluster
+:return: error: on fail
+:return: Client: a kubernetes client with a kubernetes Clientset
+*/
+func NewClient(kubeconfig string) (Client, error) {
     client := Client{}
 
     config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
@@ -35,6 +42,12 @@ func NewClient(kubeconfig, namespace string) (Client, error) {
     return client, nil
 }
 
+/*
+creates a new deployment on the kubernetes cluster
+
+:param: deploymentYaml: string: path to yaml file defining deployment
+:return: error: on fail
+*/
 func (c *Client) CreateDeployment(deploymentYaml string) error{
     var deployment appsV1.Deployment
     if err := utils.UnmarshalYaml(deploymentYaml, &deployment); err != nil {
@@ -46,6 +59,12 @@ func (c *Client) CreateDeployment(deploymentYaml string) error{
     return nil
 }
 
+/*
+creates a new secret on the kubernetes cluster
+
+:param: secretYaml: string: path to yaml file defining secret
+:return: error: on fail
+*/
 func (c *Client) CreateSecret(secretYaml string) error{
     var secret coreV1.Secret
     if err := utils.UnmarshalYaml(secretYaml, &secret); err != nil {
@@ -58,6 +77,12 @@ func (c *Client) CreateSecret(secretYaml string) error{
     return nil
 }
 
+/*
+creates a new service on the kubernetes cluster
+
+:param: serviceYaml: string: path to yaml file defining service
+:return: error: on fail
+*/
 func (c *Client) CreateService(serviceYaml string) error{
     var service coreV1.Service
     if err := utils.UnmarshalYaml(serviceYaml, &service); err != nil {
@@ -70,6 +95,12 @@ func (c *Client) CreateService(serviceYaml string) error{
     return nil
 }
 
+/*
+creates a new pod on the kubernetes cluster
+
+:param: podYaml: string: path to yaml file defining pod
+:return: error: on fail
+*/
 func (c *Client) CreatePod(podYaml string) error{
     var pod coreV1.Pod
     if err := utils.UnmarshalYaml(podYaml, &pod); err != nil {
